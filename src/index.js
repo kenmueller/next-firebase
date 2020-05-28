@@ -381,7 +381,7 @@ if (require.main === module)
 			
 			name = name.replace(/\s+/g, '-').toLowerCase()
 			
-			console.log(chalk`\n{cyan.bold [START]} {cyan Creating your Next.js app in} {cyan.bold ${join(__dirname, name)}}\n`)
+			console.log(chalk`\n{cyan.bold [START]} {cyan Creating your Next.js app in} {cyan.bold ${join(process.cwd(), name)}}\n`)
 			
 			await fs.mkdir(name)
 			
