@@ -1,0 +1,14 @@
+{
+	"name": "next-firebase",
+	"version": "1.0.5",
+	"main": "src/index.js",
+	"bin": {
+		"next-firebase": "src/index.js"
+	},
+	"dependencies": {
+		"chalk": "^4.0.0",
+		"fs-extra": "^9.0.0",
+		"system-commands": "^1.1.7",
+		"yargs": "^15.3.1"
+	}
+}
