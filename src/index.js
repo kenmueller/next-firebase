@@ -281,15 +281,9 @@ body {
 		writeFile('public/.gitignore', [
 			'**/*.DS_Store',
 			'node_modules/',
+			'.next/',
 			'out/'
 		].join('\n')),
-		
-		// next.config.js
-		writeFile(
-			'public/next.config.js',
-			`module.exports = {
-	distDir: '../functions/.next'
-}`),
 		
 		// package.json
 		writeFile('public/package.json', json({
@@ -297,7 +291,7 @@ body {
 			version: '1.0.0',
 			scripts: {
 				dev: 'next dev',
-				build: 'next build && next export',
+				build: 'next build && next export && mv .next ../functions',
 				start: 'next start'
 			},
 			dependencies: {},
