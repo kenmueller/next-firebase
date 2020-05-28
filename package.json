@@ -1,6 +1,6 @@
 {
 	"name": "next-firebase",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"main": "src/index.js",
 	"bin": {
 		"next-firebase": "src/index.js"

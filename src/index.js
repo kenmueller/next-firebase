@@ -2,9 +2,10 @@
 
 const fs = require('fs-extra')
 const { join } = require('path')
-const [name, id] = require('yargs').argv._
 const system = require('system-commands')
 const chalk = require('chalk')
+
+let [name, id] = require('yargs').argv._
 
 const mkdir = path =>
 	fs.mkdir(`${name}/${path}`)
@@ -374,6 +375,8 @@ if (require.main === module)
 		try {
 			if (!(typeof name === 'string' && typeof id === 'string'))
 				return console.log(chalk`{red.bold npx next-firebase [project_name] [project_id]}`)
+			
+			name = name.replace(/\s+/g, '-').toLowerCase()
 			
 			console.log(chalk`\n{cyan.bold [START]} {cyan Creating your Next.js app in} {cyan.bold ${join(__dirname, name)}}\n`)
 			
