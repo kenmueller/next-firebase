@@ -116,7 +116,7 @@ initializeApp({
 	storageBucket: '${id}.appspot.com'
 })
 
-export { default as app } from 'app'`),
+export { default as app } from './app'`),
 		
 		// src/app.ts
 		writeFile(
