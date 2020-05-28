@@ -1,6 +1,6 @@
 {
 	"name": "next-firebase",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"main": "src/index.js",
 	"bin": {
 		"next-firebase": "src/index.js"
@@ -10,5 +10,30 @@
 		"fs-extra": "^9.0.0",
 		"system-commands": "^1.1.7",
 		"yargs": "^15.3.1"
-	}
+	},
+	"keywords": [
+		"next",
+		"next.js",
+		"nextjs",
+		"firebase",
+		"next-firebase",
+		"nextjs-firebase",
+		"next.js-firebase",
+		"firebase-next.js"
+	],
+	"homepage": "https://github.com/kenmueller/next-firebase#readme",
+	"bugs": {
+		"url": "https://github.com/kenmueller/next-firebase/issues",
+		"email": "kenmueller0@gmail.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/kenmueller/next-firebase.git"
+	},
+	"author": {
+		"name": "Ken Mueller",
+		"email": "kenmueller0@gmail.com",
+		"url": "https://github.com/kenmueller"
+	},
+	"license": "MIT"
 }
