@@ -24,7 +24,7 @@ const makeRoot = async () => {
 		writeFile('package.json', json({
 			name,
 			scripts: {
-				clean: 'rm -rf functions/.next',
+				clean: 'rm -rf public/out functions/.next',
 				predeploy: 'npm run clean && npm run build -C public',
 				deploy: 'firebase deploy',
 				postdeploy: 'npm run clean',
@@ -49,13 +49,10 @@ const makeRoot = async () => {
 				rules: 'rules/storage.rules'
 			},
 			functions: {
-				predeploy: [
-					'npm --prefix "$RESOURCE_DIR" run lint',
-					'npm --prefix "$RESOURCE_DIR" run build'
-				]
+				predeploy: ['npm run build -C "$RESOURCE_DIR"']
 			},
 			hosting: {
-				public: 'public/public',
+				public: 'public/out',
 				ignore: ['firebase.json', '**/.*', '**/node_modules/**'],
 				rewrites: [
 					{
@@ -136,11 +133,16 @@ const app = next({
 		)
 	}
 })
-
 const handleRequest = app.getRequestHandler()
 
+let shouldPrepare = true
+
 export default functions.https.onRequest(async (req, res) => {
-	await app.prepare()
+	if (shouldPrepare) {
+		shouldPrepare = false
+		await app.prepare()
+	}
+	
 	await handleRequest(req, res)
 })`),
 		
@@ -278,7 +280,8 @@ body {
 		// .gitignore
 		writeFile('public/.gitignore', [
 			'**/*.DS_Store',
-			'node_modules/'
+			'node_modules/',
+			'out/'
 		].join('\n')),
 		
 		// next.config.js
@@ -294,7 +297,7 @@ body {
 			version: '1.0.0',
 			scripts: {
 				dev: 'next dev',
-				build: 'next build',
+				build: 'next build && next export',
 				start: 'next start'
 			},
 			dependencies: {},
