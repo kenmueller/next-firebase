@@ -2,7 +2,7 @@
 
 > Quickly scaffold a Next.js + Firebase app
 
-This integrates with Firebase Functions and has a custom deploy script in order to serve dynamic Next.js apps.
+In order to serve dynamic Next.js apps on Firebase, this includes a custom deploy script that integrates with Firebase Hosting & Firebase Functions.
 
 ## Create a project
 
