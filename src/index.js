@@ -187,7 +187,7 @@ export default functions.https.onRequest(async (req, res) => {
 				target: 'es2017',
 				skipLibCheck: true,
 				incremental: true,
-				baseUrl: '.'
+				baseUrl: 'src'
 			},
 			compileOnSave: true,
 			include: ['src']
