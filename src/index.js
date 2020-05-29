@@ -53,11 +53,33 @@ const makeRoot = async () => {
 			},
 			hosting: {
 				public: 'public/out',
+				cleanUrls: true,
+				trailingSlash: false,
 				ignore: ['firebase.json', '**/.*', '**/node_modules/**'],
 				rewrites: [
 					{
 						source: '**',
 						function: 'app'
+					}
+				],
+				headers: [
+					{
+						source: '**',
+						headers: [
+							{
+								key: 'Cache-Control',
+								value: 'public, max-age=86400, s-maxage=86400'
+							}
+						]
+					},
+					{
+						source: '/_next/**',
+						headers: [
+							{
+								key: 'Cache-Control',
+								value: 'public, max-age=31536000, s-maxage=31536000'
+							}
+						]
 					}
 				]
 			}
@@ -138,6 +160,11 @@ const handleRequest = app.getRequestHandler()
 let shouldPrepare = true
 
 export default functions.https.onRequest(async (req, res) => {
+	res.header(
+		'Cache-Control',
+		'public, max-age=86400, s-maxage=86400'
+	)
+	
 	if (shouldPrepare) {
 		shouldPrepare = false
 		await app.prepare()
