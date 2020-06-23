@@ -73,7 +73,7 @@ const makeRoot = async () => {
 						]
 					},
 					{
-						source: '/_next/**',
+						source: '/_next/static/**',
 						headers: [
 							{
 								key: 'Cache-Control',
@@ -251,9 +251,11 @@ const makePublic = async () => {
 
 import 'styles/global.scss'
 
-export default ({ Component, pageProps }: AppProps) => (
+const App = ({ Component, pageProps }: AppProps) => (
 	<Component {...pageProps} />
-)`),
+)
+
+export default App`),
 		
 		// pages/index.tsx
 		writeFile(
@@ -262,7 +264,7 @@ export default ({ Component, pageProps }: AppProps) => (
 
 import styles from 'styles/index.module.scss'
 
-export default () => (
+const Home = () => (
 	<>
 		<Head>
 			<title>Next.js</title>
@@ -271,7 +273,9 @@ export default () => (
 			<h1>If you see this, your Next.js app is working!</h1>
 		</div>
 	</>
-)`),
+)
+
+export default Home`),
 		
 		// styles/global.scss
 		writeFile(
@@ -280,10 +284,9 @@ export default () => (
 ::before,
 ::after {
 	box-sizing: border-box;
-}
-
-body {
 	margin: 0;
+	padding: 0;
+	border: none;
 }`),
 		
 		// styles/index.module.scss
