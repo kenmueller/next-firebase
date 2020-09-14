@@ -5,13 +5,15 @@ const { join } = require('path')
 const system = require('system-commands')
 const chalk = require('chalk')
 
-let [name, id] = require('yargs').argv._
+let [name, id, static] = require('yargs').argv._
 
 const mkdir = path =>
 	fs.mkdir(`${name}/${path}`)
 
 const writeFile = (path, data) =>
-	fs.writeFile(`${name}/${path}`, `${data}\n`)
+	data
+		? fs.writeFile(`${name}/${path}`, `${data}\n`)
+		: Promise.resolve()
 
 const json = object =>
 	JSON.stringify(object, null, '\t')
@@ -24,7 +26,7 @@ const makeRoot = async () => {
 		writeFile('package.json', json({
 			name,
 			scripts: {
-				clean: 'rm -rf public/out functions/.next',
+				clean: `rm -rf public/out ${static ? 'public' : 'functions'}/.next`,
 				predeploy: 'npm run clean && npm run build -C public',
 				deploy: 'firebase deploy',
 				postdeploy: 'npm run clean',
@@ -56,7 +58,7 @@ const makeRoot = async () => {
 				cleanUrls: true,
 				trailingSlash: false,
 				ignore: ['firebase.json', '**/.*', '**/node_modules/**'],
-				rewrites: [
+				rewrites: static ? undefined : [
 					{
 						source: '**',
 						function: 'app'
@@ -136,14 +138,14 @@ const makeFunctions = async () => {
 
 initializeApp({
 	storageBucket: '${id}.appspot.com'
-})
+})${static ? '' : `
 
-export { default as app } from './app'`),
+export { default as app } from './app'`}`),
 		
 		// src/app.ts
 		writeFile(
 			'functions/src/app.ts',
-			`import * as functions from 'firebase-functions'
+			static ? undefined : `import * as functions from 'firebase-functions'
 import next from 'next'
 import { join, relative } from 'path'
 
@@ -178,8 +180,8 @@ export default functions.https.onRequest(async (req, res) => {
 			'**/*.DS_Store',
 			'node_modules/',
 			'lib/',
-			'.next/'
-		].join('\n')),
+			static ? undefined : '.next/'
+		].filter(Boolean).join('\n')),
 		
 		// package.json
 		writeFile('functions/package.json', json({
@@ -224,7 +226,7 @@ export default functions.https.onRequest(async (req, res) => {
 	console.log(chalk`{green.bold [SUCCESS] Made functions directory}`)
 	console.log(chalk`{yellow.bold [WAITING]} {yellow Installing dependencies for functions (this might take some time)...}`)
 	
-	await system(`npm i firebase-admin firebase-functions next react react-dom -C ${name}/functions`)
+	await system(`npm i firebase-admin firebase-functions${static ? '' : ' next react react-dom'} -C ${name}/functions`)
 	await system(`npm i -D typescript -C ${name}/functions`)
 	
 	console.log(chalk`{green.bold [SUCCESS] Installed dependencies for functions}`)
@@ -245,6 +247,24 @@ const makePublic = async () => {
 		// public/favicon.ico
 		system(`cp ${join(__dirname, '../assets/favicon.ico')} ${name}/public/public`),
 		
+		// pages/_document.tsx
+		writeFile(
+			'public/pages/_document.tsx',
+			`import Document, { Html, Head, Main, NextScript } from 'next/document'
+
+export default class CustomDocument extends Document {
+	render = () => (
+		<Html lang="en">
+			<Head />
+			<body>
+				<Main />
+				<NextScript />
+			</body>
+		</Html>
+	)
+}`),
+		
+		// pages/_app.tsx
 		writeFile(
 			'public/pages/_app.tsx',
 			`import { AppProps } from 'next/app'
@@ -262,17 +282,15 @@ export default App`),
 			'public/pages/index.tsx',
 			`import Head from 'next/head'
 
-import styles from 'styles/index.module.scss'
+import styles from 'styles/Home.module.scss'
 
 const Home = () => (
-	<>
+	<div className={styles.root}>
 		<Head>
 			<title>Next.js</title>
 		</Head>
-		<div className={styles.root}>
-			<h1>If you see this, your Next.js app is working!</h1>
-		</div>
-	</>
+		<h1>If you see this, your Next.js app is working!</h1>
+	</div>
 )
 
 export default Home`),
@@ -289,9 +307,9 @@ export default Home`),
 	border: none;
 }`),
 		
-		// styles/index.module.scss
+		// styles/Home.module.scss
 		writeFile(
-			'public/styles/index.module.scss',
+			'public/styles/Home.module.scss',
 			`.root {
 	display: flex;
 	justify-content: center;
@@ -321,7 +339,7 @@ export default Home`),
 			version: '1.0.0',
 			scripts: {
 				dev: 'next dev',
-				build: 'next build && next export && mv .next ../functions',
+				build: `next build && next export${static ? '' : ' && mv .next ../functions'}`,
 				start: 'next start'
 			},
 			dependencies: {},
@@ -404,6 +422,7 @@ if (require.main === module)
 				return console.log(chalk`{red.bold npx next-firebase [project_name] [project_id]}`)
 			
 			name = name.replace(/\s+/g, '-').toLowerCase()
+			static = static === '--static' || static === '-s'
 			
 			console.log(chalk`\n{cyan.bold [START]} {cyan Creating your Next.js app in} {cyan.bold ${join(process.cwd(), name)}}\n`)
 			
