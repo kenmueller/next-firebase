@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 
+const { argv } = require('yargs')
 const fs = require('fs-extra')
 const { join } = require('path')
 const system = require('system-commands')
 const chalk = require('chalk')
 
-let [name, id, static] = require('yargs').argv._
+const static = Boolean(argv.static)
+let [name, id] = argv._
 
 const mkdir = path =>
 	fs.mkdir(`${name}/${path}`)
@@ -422,7 +424,6 @@ if (require.main === module)
 				return console.log(chalk`{red.bold npx next-firebase [project_name] [project_id]}`)
 			
 			name = name.replace(/\s+/g, '-').toLowerCase()
-			static = static === '--static' || static === '-s'
 			
 			console.log(chalk`\n{cyan.bold [START]} {cyan Creating your Next.js app in} {cyan.bold ${join(process.cwd(), name)}}\n`)
 			

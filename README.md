@@ -18,8 +18,6 @@ npx next-firebase [project_name] [project_id]
 npx next-firebase [project_name] [project_id] --static
 ```
 
-Use the `--static` flag or the `-s` flag to remove server-side rendering.
-
 ## Example
 
 ```bash
